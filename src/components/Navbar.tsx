@@ -1,86 +1,96 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, MapPin } from 'lucide-react';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Building2, Menu, Monument, Palette, X } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const location = useLocation();
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const isLinkActive = (path: string) => {
+    return location.pathname === path;
+  };
+
+  const navLinks = [
+    { path: "/", label: "Главная" },
+    { path: "/monuments", label: "Памятники архитектуры", icon: <Monument className="h-4 w-4 mr-1" /> },
+    { path: "/landmarks", label: "Знаковые места", icon: <Building2 className="h-4 w-4 mr-1" /> },
+    { path: "/art-objects", label: "Арт-объекты", icon: <Palette className="h-4 w-4 mr-1" /> },
+    { path: "/architects", label: "Архитекторы" }
+  ];
+
   return (
-    <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+    <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex justify-between items-center">
-          <Link to="/" className="flex items-center space-x-2">
-            <MapPin className="h-6 w-6 text-kazan-primary" />
-            <span className="text-xl font-serif font-bold text-kazan-dark">Казань</span>
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2" onClick={closeMenu}>
+            <img src="/logo-b.svg" alt="Казань" className="h-8 w-auto" />
+            <span className="font-bold text-xl hidden sm:inline-block">Казань</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            <Link to="/monuments" className="text-kazan-dark hover:text-kazan-primary transition-colors">
-              Памятники архитектуры
-            </Link>
-            <Link to="/art-objects" className="text-kazan-dark hover:text-kazan-primary transition-colors">
-              Арт объекты
-            </Link>
-            <Link to="/landmarks" className="text-kazan-dark hover:text-kazan-primary transition-colors">
-              Знаковые места
-            </Link>
-            <Link to="/architects" className="text-kazan-dark hover:text-kazan-primary transition-colors">
-              Архитекторы
-            </Link>
-          </div>
+          <nav className="hidden md:flex items-center space-x-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium flex items-center transition-colors ${
+                  isLinkActive(link.path)
+                    ? "bg-kazan-primary/10 text-kazan-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {link.icon} {link.label}
+              </Link>
+            ))}
+          </nav>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={toggleMenu}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden" 
+            onClick={toggleMenu}
+          >
             {isMenuOpen ? (
-              <X className="h-6 w-6 text-kazan-dark" />
+              <X className="h-6 w-6" />
             ) : (
-              <Menu className="h-6 w-6 text-kazan-dark" />
+              <Menu className="h-6 w-6" />
             )}
-          </button>
+          </Button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 animate-fade-in">
-            <div className="flex flex-col space-y-4">
-              <Link 
-                to="/monuments" 
-                className="text-kazan-dark hover:text-kazan-primary transition-colors"
-                onClick={toggleMenu}
-              >
-                Памятники архитектуры
-              </Link>
-              <Link 
-                to="/art-objects" 
-                className="text-kazan-dark hover:text-kazan-primary transition-colors"
-                onClick={toggleMenu}
-              >
-                Арт объекты
-              </Link>
-              <Link 
-                to="/landmarks" 
-                className="text-kazan-dark hover:text-kazan-primary transition-colors"
-                onClick={toggleMenu}
-              >
-                Знаковые места
-              </Link>
-              <Link 
-                to="/architects" 
-                className="text-kazan-dark hover:text-kazan-primary transition-colors"
-                onClick={toggleMenu}
-              >
-                Архитекторы
-              </Link>
+          <nav className="md:hidden pt-4 pb-3">
+            <div className="flex flex-col space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`px-3 py-2 rounded-md text-sm font-medium flex items-center ${
+                    isLinkActive(link.path)
+                      ? "bg-kazan-primary/10 text-kazan-primary"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  {link.icon} {link.label}
+                </Link>
+              ))}
             </div>
-          </div>
+          </nav>
         )}
       </div>
-    </nav>
+    </header>
   );
 };
 
